@@ -14,10 +14,12 @@ import com.example.mcoo_255_term_project.databinding.ActivityMainBinding;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.preference.PreferenceManager;
 
+import android.os.PersistableBundle;
 import android.view.View;
 
 import com.google.android.material.textfield.TextInputEditText;
@@ -33,7 +35,7 @@ import lib.Utils;
 
 public class MainActivity extends AppCompatActivity {
 
-    private TextView mAnswer, mThinkingText;
+    private TextView mAnswer;
     private String mQuestionAnswer;
     private TextInputEditText mUserInput;
     private ActivityMainBinding binding;
@@ -48,9 +50,6 @@ public class MainActivity extends AppCompatActivity {
 
         PreferenceManager.setDefaultValues(this, R.xml.root_preferences, false);
         Utils.setNightModeOnOffFromPreferenceValue(getApplicationContext(), getString(R.string.night_mode_key));
-        mSnackBar =
-                Snackbar.make(findViewById(android.R.id.content), "Hello",
-                        Snackbar.LENGTH_LONG);
         setupToolbar();
         setupFAB();
         setupFields();
@@ -59,8 +58,12 @@ public class MainActivity extends AppCompatActivity {
     private void setupFAB() {
         ExtendedFloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
+
             @Override
             public void onClick(View view) {
+                mSnackBar =
+                        Snackbar.make(findViewById(android.R.id.content), "Hello",
+                                Snackbar.LENGTH_LONG);
                 // validate that a question was asked
                 if(mUserInput.getText().toString() == "") { // makethis work
                     Toast.makeText(getApplicationContext(),
@@ -68,8 +71,10 @@ public class MainActivity extends AppCompatActivity {
                             Toast.LENGTH_SHORT).show();
                 } else {
                     mQuestionAnswer = Magic8Ball.answerQuestion();
-                    // insert logic to make it blink on and off
-                    mThinkingText.setText("Thinking...");
+                    // toast pop up that says thinking
+                    Toast.makeText(getApplicationContext(),
+                            R.string.thinking,
+                            Toast.LENGTH_SHORT).show();
                     mAnswer.setText(mQuestionAnswer);
                     mSnackBar.setText(Magic8Ball.getQuestionCount() + "questions asked.");
                     mSnackBar.show();
@@ -85,10 +90,18 @@ public class MainActivity extends AppCompatActivity {
 
     private void setupFields() {
         mAnswer = findViewById(R.id.answer_text);
-        mThinkingText = findViewById(R.id.thinking_text);
         mUserInput = findViewById(R.id.user_input);
     }
 
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState, @NonNull PersistableBundle outPersistentState) {
+        super.onSaveInstanceState(outState, outPersistentState);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -102,12 +115,6 @@ public class MainActivity extends AppCompatActivity {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
 
         int itemId = item.getItemId();
         if (itemId == R.id.action_history) {
