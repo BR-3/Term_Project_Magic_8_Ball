@@ -8,7 +8,6 @@
     android:gravity="center"
     app:layout_constraintTop_toTopOf="parent"
     app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintBottom_toTopOf="@id/question_input_layout"
     tools:showIn="@layout/content_main">
 
     <TextView

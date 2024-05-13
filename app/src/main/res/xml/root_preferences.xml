@@ -10,12 +10,4 @@
             android:title="@string/night_mode_title" />
     </PreferenceCategory>
 
-    <PreferenceCategory android:title="@string/save_history_header">
-        `<SwitchPreferenceCompat
-            android:defaultValue="true"
-            android:key="@string/auto_save_key"
-            android:summaryOff="@string/auto_save_off"
-            android:summaryOn="@string/auto_save_on"
-            android:title="@string/auto_save_title" />`
-    </PreferenceCategory>
 </PreferenceScreen>

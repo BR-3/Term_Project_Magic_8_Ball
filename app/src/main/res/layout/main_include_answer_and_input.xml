@@ -4,6 +4,5 @@
     tools:showIn="@layout/content_main">
 
     <include layout="@layout/main_include_question" />
-
     <include layout="@layout/main_include_answer" />
 </merge>

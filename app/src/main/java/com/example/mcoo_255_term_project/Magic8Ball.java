@@ -1,5 +1,7 @@
 package com.example.mcoo_255_term_project;
 
+import com.google.gson.Gson;
+
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -68,8 +70,8 @@ public class Magic8Ball {
     }
 
     public static void deleteSavedQuestions() {
-        for(int i = 0; i<questionList.size(); i++) {
-            questionList.remove(i);
-        }
+        questionList.clear();
+        questionCount = 0;
     }
+
 }

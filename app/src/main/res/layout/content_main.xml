@@ -4,11 +4,11 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:layout_margin="@dimen/fab_margin"
+    android:layout_margin="16dp"
     app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
     <include layout="@layout/main_include_instruction_bar" />
-
     <include layout="@layout/main_include_answer_and_input" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

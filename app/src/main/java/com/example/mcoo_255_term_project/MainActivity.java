@@ -8,7 +8,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
+
 
 import com.example.mcoo_255_term_project.databinding.ActivityMainBinding;
 
@@ -35,11 +35,10 @@ import lib.Utils;
 
 public class MainActivity extends AppCompatActivity {
 
-    private TextView mAnswer;
+    private TextView mAnswer, mQuestionCountOutput;
     private String mQuestionAnswer;
     private TextInputEditText mUserInput;
     private ActivityMainBinding binding;
-    private Snackbar mSnackBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,6 +52,8 @@ public class MainActivity extends AppCompatActivity {
         setupToolbar();
         setupFAB();
         setupFields();
+
+
     }
 
     private void setupFAB() {
@@ -61,23 +62,30 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onClick(View view) {
-                mSnackBar =
-                        Snackbar.make(findViewById(android.R.id.content), "Hello",
-                                Snackbar.LENGTH_LONG);
+                Runnable runnable = new Runnable() {
+                    @Override
+                    public void run() {
+                        mAnswer.setVisibility(View.VISIBLE);
+                    }
+                };
+
                 // validate that a question was asked
-                if(mUserInput.getText().toString() == "") { // makethis work
+                String userQuestion = mUserInput.getText().toString();
+                if(userQuestion.isEmpty()) { // make this work
                     Toast.makeText(getApplicationContext(),
                             R.string.error_message_no_question,
                             Toast.LENGTH_SHORT).show();
                 } else {
+                    Magic8Ball.saveQuestion(userQuestion);
+                    mAnswer.setVisibility(View.INVISIBLE);
                     mQuestionAnswer = Magic8Ball.answerQuestion();
                     // toast pop up that says thinking
                     Toast.makeText(getApplicationContext(),
                             R.string.thinking,
                             Toast.LENGTH_SHORT).show();
                     mAnswer.setText(mQuestionAnswer);
-                    mSnackBar.setText(Magic8Ball.getQuestionCount() + "questions asked.");
-                    mSnackBar.show();
+                    mAnswer.postDelayed(runnable, 3000);
+                    mQuestionCountOutput.setText(Magic8Ball.getQuestionCount() + " questions asked.");
                 }
             }
         });
@@ -91,6 +99,7 @@ public class MainActivity extends AppCompatActivity {
     private void setupFields() {
         mAnswer = findViewById(R.id.answer_text);
         mUserInput = findViewById(R.id.user_input);
+        mQuestionCountOutput = findViewById(R.id.questions_asked);
     }
 
     @Override
@@ -101,6 +110,9 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
+        if(Magic8Ball.getQuestionCount() >0) {
+            mQuestionCountOutput.setText(Magic8Ball.getQuestionCount() + " questions asked.");
+        }
     }
 
     @Override
@@ -112,18 +124,16 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-
         int itemId = item.getItemId();
         if (itemId == R.id.action_history) {
-            TODO:// have another activitythat shows previous questions and ansewers (in scrollview)
+            showHistory();
             return true;
-        } else if (itemId == R.id.action_delete_history) {
-            // delete all history, alert on snackbar that they were eleted
+        } else
+        if (itemId == R.id.action_delete_count) {
+            deleteQuestionCount();
             return true;
-        } else if (itemId == R.id.action_settings) {
+        } else
+            if (itemId == R.id.action_settings) {
             showSettings();
             return true;
         } else if (itemId == R.id.action_about) {
@@ -134,8 +144,17 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    private void showHistory() {
+        Intent intent = new Intent(getApplicationContext(), QuestionHistoryActivity.class);
+        startActivity(intent);
+    }
+
+    private void deleteQuestionCount() {
+        Magic8Ball.deleteSavedQuestions();
+        mQuestionCountOutput.setText("");
+    }
+
     private void showAbout() {
-        dismissSnackBarIfShown();
         showInfoDialog(MainActivity.this, "About Magic 8 Ball",
                 "A fun answer to any question you have!\n" +
                         "\nAndroid game by BR.\nMCOO 255 Term Project");
@@ -149,17 +168,11 @@ public class MainActivity extends AppCompatActivity {
             });
 
     private void showSettings() {
-        dismissSnackBarIfShown();
         Intent intent = new Intent(getApplicationContext(), SettingsActivity.class);
         settingsLauncher.launch(intent);
     }
 
     private void restoreOrSetFromPreferences_AllAppAndGameSettings() {
         getDefaultSharedPreferences(this);
-    }
-    private void dismissSnackBarIfShown() {
-        if (mSnackBar.isShown()) {
-            mSnackBar.dismiss();
-        }
     }
 }
