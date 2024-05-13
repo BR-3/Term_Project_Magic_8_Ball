@@ -1,6 +1,4 @@
-package com.example.mcoo_255_term_project;
-
-import com.google.gson.Gson;
+package models;
 
 import java.util.ArrayList;
 import java.util.Random;
